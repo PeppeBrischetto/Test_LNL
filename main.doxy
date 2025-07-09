@@ -1,0 +1,16 @@
+// $Id: main.doxy 118 2010-02-03 15:02:48Z gunter $
+
+/**
+ \mainpage Task 4
+
+ \section Objective
+  Interact with the Geant4 to retrieve information
+  - existing user hooks via user action classes
+  - use and customize existing scorers
+
+ \section Exercises
+
+  - \subpage task4a 
+  - \subpage task4b 
+
+*/

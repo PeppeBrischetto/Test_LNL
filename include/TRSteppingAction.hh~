@@ -1,0 +1,31 @@
+
+/**
+* @file: TRSteppingAction.hh
+* @brief: Definition of the TRSteppingAction class. 
+* @author: Annamaria Muoio
+*
+*/
+
+#ifndef TRSteppingAction_h
+#define TRSteppingAction_h 1
+
+#include "G4Run.hh"
+#include "G4StepPoint.hh"
+#include "G4UserSteppingAction.hh"
+
+class G4Navigator;
+class TRPrimaryGeneratorAction;
+
+class TRSteppingAction : public G4UserSteppingAction
+{
+public:
+  TRSteppingAction(TRPrimaryGeneratorAction*);
+  virtual ~TRSteppingAction(){};
+  virtual void UserSteppingAction (const G4Step *);
+  
+private:
+  G4Navigator* fNavigator;
+
+};
+
+#endif

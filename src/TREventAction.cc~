@@ -1,0 +1,123 @@
+#include "TREventAction.hh"
+
+#include <G4SDManager.hh>
+#include <G4THitsMap.hh>
+#include <G4SystemOfUnits.hh>
+#include <G4Event.hh>
+
+#include "TRAnalysisManager.hh"
+
+using namespace std;
+TREventAction::TREventAction() 
+  : G4UserEventAction(),
+    fPrintModulo(10000)
+{;}
+
+void TREventAction::EndOfEventAction(const G4Event* event)
+{
+  // Retrieve the collectionID corresponding to hits in the crystal
+  // and in the patient. This is done only at the first event
+  if ( fCollID_cryst < 0 ) {
+   fCollID_cryst 
+     = G4SDManager::GetSDMpointer()->GetCollectionID("SiC/edep");
+   G4cout << " fCollID_cryst: " << fCollID_cryst << G4endl;   
+  }
+
+  if (fCollID_cryst2 < 0) {
+    fCollID_cryst2
+      = G4SDManager::GetSDMpointer()->GetCollectionID("DeadLayer/edep");
+    G4cout << " fCollID_cryst2: " << fCollID_cryst2 << G4endl;   
+  }
+  
+
+  if (fCollID_cryst3 < 0) {
+    fCollID_cryst3
+      = G4SDManager::GetSDMpointer()->GetCollectionID("CsI/edep");
+    G4cout << " fCollID_cryst3: " << fCollID_cryst3 << G4endl;   
+  }
+  G4int evtNb = event->GetEventID();
+  
+  if (evtNb%fPrintModulo == 0) { 
+    G4cout << "\n---> end of event: " << evtNb << G4endl;
+  }      
+  
+  //Hits collections
+  //  
+  // Get all hits-collections available for this events: there should be two 
+  // hits-collection, one of hits in the patient and one of hits in the 
+  // crystals. They are created in the UserGeometry.
+  G4HCofThisEvent* HCE = event->GetHCofThisEvent();
+  if(!HCE) return;
+  
+  //
+  // Energy in crystal : identify 'good events'
+  //
+   
+  //ok, let's start the game: retrieve the hits-collection in the crystals.
+  //This comes from a Geant4 multiscorer of type "G4PSEnergyDeposit", which scores 
+  //energy deposit.
+ 
+  std::map<G4int,G4double*>::iterator itr;
+  std::vector<G4double> energiesSic;
+  std::vector<G4int> idSic;
+  std::vector<G4double>energiesLay; 
+  std::vector<G4int> idLay; 
+  std::vector<G4double>energiesCsI;  
+  std::vector<G4int> idCsI; 
+
+  G4THitsMap<G4double>* evtMap = 
+    static_cast<G4THitsMap<G4double>*>(HCE->GetHC(fCollID_cryst));             
+  G4double totEdep = 0.;
+  for (itr = evtMap->GetMap()->begin(); itr != evtMap->GetMap()->end(); itr++) 
+    {
+      G4double edep = *(itr->second);
+      totEdep += edep;
+      G4int copyNb  = (itr->first);
+      G4cout << "\n  SiC #" << copyNb << ": " << edep/keV << " keV ";
+      if (edep >0)
+       { 
+         energiesSic.push_back(edep);
+         idSic.push_back(copyNb);
+	 /*
+	   energiesLay.push_back(edep);
+	   idLay.push_back(copyNb);
+	   energiesCsI.push_back(edep);
+	   idCsI.push_back(copyNb);
+	 */
+       }
+ }  
+  
+  G4double eTot2 = 0.;
+  evtMap = static_cast<G4THitsMap<G4double>*>(HCE->GetHC(fCollID_cryst2));
+  for (itr = evtMap->GetMap()->begin(); itr != evtMap->GetMap()->end(); itr++)
+    {
+      G4double edep = *(itr->second);
+      eTot2 += edep;
+      G4int copyNb  = (itr->first);
+      G4cout << "\n  DeadLayer #" << copyNb << ": " << edep/keV << " keV ";
+      if (edep)
+	{
+	  energiesLay.push_back(edep);
+	  idLay.push_back(copyNb);
+	}
+    }
+
+  G4double eTot3 = 0.;
+  evtMap = static_cast<G4THitsMap<G4double>*>(HCE->GetHC(fCollID_cryst3));
+  for (itr = evtMap->GetMap()->begin(); itr != evtMap->GetMap()->end(); itr++)
+    {
+      G4double edep = *(itr->second);
+      eTot3 += edep;
+      G4int copyNb  = (itr->first);
+     G4cout << "\n  CsI #" << copyNb << ": " << edep/keV << " keV " << G4endl;    
+     if (edep)
+       {
+	 energiesCsI.push_back(edep);
+	 idCsI.push_back(copyNb);
+       }
+    }
+
+  //TRAnalysisManager* man = TRAnalysisManager::getInstance();
+  //Uncomment these lines in task 4b
+  //man->AddEvent(energiesSic,idSic,energiesLay,idLay,energiesCsI,idCsI);
+}
