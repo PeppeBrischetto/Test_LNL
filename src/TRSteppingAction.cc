@@ -129,11 +129,13 @@ void TRSteppingAction::UserSteppingAction (const G4Step *aStep)
   G4ThreeVector RandomPoint = PreStepPoint + r*( PostStepPoint - PreStepPoint );    
 
   G4ThreeVector randomPoint = localPosition1 + r*( localPosition2 - localPosition1 );
+  
+  G4double KinE = aStep->GetTrack()->GetKineticEnergy();
 
   G4double time = -10.; // RP
 
   G4double cosThetaIn = fGen->GetCosTheta();
-  G4double KinE = fGen->GetKinE();
+  //G4double KinE = fGen->GetKinE();
   G4double xf = fGen->Getxf();
   G4double yf = fGen->Getyf();
   G4double tf = fGen->Gettf();
@@ -196,15 +198,17 @@ void TRSteppingAction::UserSteppingAction (const G4Step *aStep)
       //G4cout <<targetLV->GetName() <<G4endl;	// GB 2022-11-11
 //    }	
     else
-      analysis->FillNtupleIColumn(1, 15);
+      analysis->FillNtupleIColumn(1, 15);  //Ordine numerico crescente, stesso ordine del TRrunaction
 
     analysis->FillNtupleIColumn(2, copyNo);
     analysis->FillNtupleDColumn(3, edep/keV);
     analysis->FillNtupleDColumn(4, randomPoint.getX() / um);
     analysis->FillNtupleDColumn(5, randomPoint.getY() / um);
     analysis->FillNtupleDColumn(6, randomPoint.getZ() / um);
+    analysis->FillNtupleDColumn(7, KinE / MeV);
+    analysis->FillNtupleDColumn(8, stepLen/um);    
+/*    
     analysis->FillNtupleDColumn(7, cosThetaIn);
-    analysis->FillNtupleDColumn(8, KinE / MeV);
     analysis->FillNtupleDColumn(9, xf / m);
     analysis->FillNtupleDColumn(10, yf / m);
     analysis->FillNtupleDColumn(11, tf);
@@ -214,7 +218,7 @@ void TRSteppingAction::UserSteppingAction (const G4Step *aStep)
     analysis->FillNtupleDColumn(15, tof);
     analysis->FillNtupleDColumn(16, time); // RP
     analysis->FillNtupleDColumn(17, stepLen/um);
-    
+*/    
     analysis->AddNtupleRow();
   }
 

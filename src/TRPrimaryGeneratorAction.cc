@@ -113,7 +113,7 @@ void TRPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
      //posizione di sparo
   G4double zOfSource = -46.0*cm;
   G4double xOfSource = -0.*mm;
-  G4double yOfSource = -0.*mm;
+  G4double yOfSource = 30.8*mm;
   
   fParticleGun -> SetParticlePosition(G4ThreeVector(xOfSource, yOfSource, zOfSource));
   
@@ -139,7 +139,7 @@ void TRPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   
   //Proposta Lombardo
   // 3. Direzione casuale entro il cono
-    G4double radius = 3.4435 * cm;    // raggio effettivo
+    G4double radius = 6.17 * cm;    // raggio effettivo
     G4double distance = 46. * cm;     // distanza sorgente-rivelatore
     G4double theta_max = std::atan(radius / distance);  
 
@@ -149,16 +149,27 @@ void TRPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     G4double theta = std::acos(cosTheta);
     G4double phi = 2. * CLHEP::pi * G4UniformRand();
 
-    // Conversione in vettore di direzione (rispetto all’asse Z)
-    G4double dirX = std::sin(theta) * std::cos(phi);
-    G4double dirY = std::sin(theta) * std::sin(phi);
-    G4double dirZ = std::cos(theta);
 
-    G4ThreeVector direction(dirX, dirY, dirZ);
-    fParticleGun->SetParticleMomentumDirection(direction);
+    G4double x = (-15.5 + (31.0) * G4UniformRand()) * mm;
+    G4double y = (-31.0 + (62.0) * G4UniformRand()) * mm;
+    G4double z = 0. * mm;
+
+    G4ThreeVector direction = G4ThreeVector(x, y, z) - G4ThreeVector(xOfSource, yOfSource, zOfSource);
+
+    direction = direction.unit();
+    
+    fParticleGun->SetParticleMomentumDirection(direction);    
+
+    // Conversione in vettore di direzione (rispetto all’asse Z)
+    //G4double dirX = std::sin(theta) * std::cos(phi);
+    //G4double dirY = std::sin(theta) * std::sin(phi);
+    //G4double dirZ = std::cos(theta);
+
+    //G4ThreeVector direction(dirX, dirY, dirZ);
+    //fParticleGun->SetParticleMomentumDirection(direction);
 
     // 4. Imposta energia della particella
-    fParticleGun->SetParticleEnergy(250.*MeV);  // o qualsiasi valore ti serva
+    fParticleGun->SetParticleEnergy(300.*MeV);  // o qualsiasi valore ti serva
 
     // 5. Genera il vertice primario
     //fParticleGun->GeneratePrimaryVertex(anEvent);

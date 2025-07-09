@@ -81,16 +81,16 @@ void TRRunAction::BeginOfRunAction(const G4Run* run)
   analysisManager->CreateNtupleDColumn("x");
   analysisManager->CreateNtupleDColumn("y");
   analysisManager->CreateNtupleDColumn("z");
-  analysisManager->CreateNtupleDColumn("cosThetaIn");
+  //analysisManager->CreateNtupleDColumn("cosThetaIn");
   analysisManager->CreateNtupleDColumn("KinE");
-  analysisManager->CreateNtupleDColumn("xf");
-  analysisManager->CreateNtupleDColumn("yf");
-  analysisManager->CreateNtupleDColumn("tf");
-  analysisManager->CreateNtupleDColumn("phf");
-  analysisManager->CreateNtupleDColumn("tpol");
-  analysisManager->CreateNtupleDColumn("phpol");
-  analysisManager->CreateNtupleDColumn("tof");
-  analysisManager->CreateNtupleDColumn("time");
+  //analysisManager->CreateNtupleDColumn("xf");
+  //analysisManager->CreateNtupleDColumn("yf");
+  //analysisManager->CreateNtupleDColumn("tf");
+  //analysisManager->CreateNtupleDColumn("phf");
+  //analysisManager->CreateNtupleDColumn("tpol");
+  //analysisManager->CreateNtupleDColumn("phpol");
+  //analysisManager->CreateNtupleDColumn("tof");
+  //analysisManager->CreateNtupleDColumn("time");
   analysisManager->CreateNtupleDColumn("stepLen");
  
   //ok, done
