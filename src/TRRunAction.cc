@@ -92,6 +92,8 @@ void TRRunAction::BeginOfRunAction(const G4Run* run)
   //analysisManager->CreateNtupleDColumn("tof");
   //analysisManager->CreateNtupleDColumn("time");
   analysisManager->CreateNtupleDColumn("stepLen");
+  analysisManager->CreateNtupleIColumn("parentID");
+  analysisManager->CreateNtupleIColumn("particleID_PDG");
  
   //ok, done
   analysisManager->FinishNtuple();

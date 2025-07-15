@@ -120,6 +120,8 @@ G4VPhysicalVolume* TRDetectorConstruction::Construct()
   G4Material* grid_mat = nist->FindOrBuildMaterial("G4_BRASS");
   G4Material* res_material = nist->FindOrBuildMaterial("res");
   G4Material* window_mat = nist->FindOrBuildMaterial("Mylar"); 	// GB 2022-11-11
+  G4Material* poly_frame   = nist->FindOrBuildMaterial("G4_NYLON-6/6"); // GB 2025-07-15  
+  
   //     
   // G4cout << "Pointer to material: " << cryst_scin << G4endl;
   //
@@ -287,6 +289,53 @@ G4VPhysicalVolume* TRDetectorConstruction::Construct()
                        << "\t copyNo " << copyNo << G4endl;
             }
   }
+  
+  // ******************************************************************************************************** //
+  //
+  // *****   Polyamide frame *****//
+  
+  G4double poly_ext_XY = 14.70 * mm;
+  G4double poly_width = 0.03 * mm;
+  G4double poly_int_XY = poly_ext_XY - 2*poly_width;
+  G4double polyZ = 0.02 * mm;
+  G4Box* poly_ext_Solid = new G4Box("polyExtSolid",poly_ext_XY/2.,poly_ext_XY/2.,polyZ/2.);
+  G4Box* poly_int_Solid = new G4Box("polyIntSolid",poly_int_XY/2.,poly_int_XY/2.,polyZ/2.);
+  G4VSolid* poly_solid = new G4SubtractionSolid("polySolid",poly_ext_Solid,poly_int_Solid);
+  
+  // polyamide frame Logical Volume definition    
+  G4LogicalVolume* polyLogical = new G4LogicalVolume(poly_solid,          //its solid
+						       poly_frame,          //its material
+						       "polyLV");           //its name
+
+
+  for (G4int iColumn=0;iColumn<nRows; iColumn++) 
+  {
+            for (G4int iRow=0;iRow<nColumns;iRow++)
+            {
+                G4int jx = iRow - nColumns/2;
+                G4int jy = iColumn - nRows/2;
+                // G4double y = (jy)*(sicXY+crystalDistanceY); // This value is for 5 rows of telescopes
+                G4double y = (jy)*(sicXY+crystalDistanceY) + sicXY/2. + crystalDistanceX/2.;
+                G4double x = (jx)*(sicXY+crystalDistanceX) + sicXY/2. + crystalDistanceX/2.;
+                G4double z = -sicZ/2. - polyZ/2. - 2.*nm;
+                char volumename[100];
+                sprintf(volumename, "poly_row%d_col%d", iColumn, iRow);
+                G4int copyNo = iRow + iColumn*nColumns;
+	         new G4PVPlacement(0,                //no rotation
+                            G4ThreeVector(x,y,z),  //at (0,0,0)
+			     polyLogical,             //its logical volume
+                            volumename,             //its name
+                            moduleLogical,             //its mother  volume
+                            false,                  //no boolean operation
+                            copyNo,                 //copy number
+                            fCheckOverlaps);        // checking overlaps 
+
+                G4cout << "Sono qui: iColumn " << iColumn << "\t jx " << jx << "\t jy " << jy << " \t x " << x/cm << "\t y " << y/cm 
+                       << "\t copyNo " << copyNo << G4endl;
+            }
+  }
+						       
+						       
 
   //     
   // ***** strato morto SiC *****
@@ -598,6 +647,7 @@ G4VPhysicalVolume* TRDetectorConstruction::Construct()
   //resLogical->SetVisAttributes(G4VisAttributes(false));
   resLogical->SetVisAttributes(new G4VisAttributes(lightgray2));
   sicLogical->SetVisAttributes(new G4VisAttributes(red));
+  polyLogical->SetVisAttributes(new G4VisAttributes(G4Color::Cyan()));  //GB 2025-07-15
   laydeaLogical->SetVisAttributes(new G4VisAttributes(green));
   gridLogical->SetVisAttributes(new G4VisAttributes(vergadoro));
   //frameLogical->SetVisAttributes(G4VisAttributes(false));

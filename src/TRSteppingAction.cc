@@ -153,7 +153,11 @@ void TRSteppingAction::UserSteppingAction (const G4Step *aStep)
   //G4double xCheck = -1000.*m;
   //G4double yCheck = -1000.*m;
 
-  G4String parName = aStep->GetTrack()->GetDefinition()->GetParticleName(); 
+  G4String parName = aStep->GetTrack()->GetDefinition()->GetParticleName();
+  
+  G4int parentID = aStep->GetTrack()->GetParentID();
+  
+  G4int particleID = aStep->GetTrack()->GetDefinition()->GetPDGEncoding();
 
   //if (volumeName != "World" ) // GB 2021-05-18
   {
@@ -190,6 +194,8 @@ void TRSteppingAction::UserSteppingAction (const G4Step *aStep)
       analysis->FillNtupleIColumn(1, 3);
     else if (namePV == "gridLV") 
       analysis->FillNtupleIColumn(1, 4);
+    else if (namePV == "polyLV") 
+      analysis->FillNtupleIColumn(1, 5);  
     else if (namePV == "World") 
       analysis->FillNtupleIColumn(1, 7);
 
@@ -206,7 +212,9 @@ void TRSteppingAction::UserSteppingAction (const G4Step *aStep)
     analysis->FillNtupleDColumn(5, randomPoint.getY() / um);
     analysis->FillNtupleDColumn(6, randomPoint.getZ() / um);
     analysis->FillNtupleDColumn(7, KinE / MeV);
-    analysis->FillNtupleDColumn(8, stepLen/um);    
+    analysis->FillNtupleDColumn(8, stepLen/um);
+    analysis->FillNtupleIColumn(9, parentID);
+    analysis->FillNtupleIColumn(10, particleID);
 /*    
     analysis->FillNtupleDColumn(7, cosThetaIn);
     analysis->FillNtupleDColumn(9, xf / m);

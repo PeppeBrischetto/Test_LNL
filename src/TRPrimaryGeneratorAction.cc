@@ -139,17 +139,17 @@ void TRPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   
   //Proposta Lombardo
   // 3. Direzione casuale entro il cono
-    G4double radius = 6.17 * cm;    // raggio effettivo
-    G4double distance = 46. * cm;     // distanza sorgente-rivelatore
-    G4double theta_max = std::atan(radius / distance);  
+    //G4double radius = 6.17 * cm;    // raggio effettivo
+    //G4double distance = 46. * cm;     // distanza sorgente-rivelatore
+    //G4double theta_max = std::atan(radius / distance);  
 
     // Genera theta e phi casuali nel cono solido
-    G4double cosThetaMin = std::cos(theta_max);
-    G4double cosTheta = cosThetaMin + (1.0 - cosThetaMin) * G4UniformRand();  // uniforme in cos(θ)
-    G4double theta = std::acos(cosTheta);
-    G4double phi = 2. * CLHEP::pi * G4UniformRand();
+    //G4double cosThetaMin = std::cos(theta_max);
+    //G4double cosTheta = cosThetaMin + (1.0 - cosThetaMin) * G4UniformRand();  // uniforme in cos(θ)
+    //G4double theta = std::acos(cosTheta);
+    //G4double phi = 2. * CLHEP::pi * G4UniformRand();
 
-
+    // Generate a random position in the active telescopes region
     G4double x = (-15.5 + (31.0) * G4UniformRand()) * mm;
     G4double y = (-31.0 + (62.0) * G4UniformRand()) * mm;
     G4double z = 0. * mm;
