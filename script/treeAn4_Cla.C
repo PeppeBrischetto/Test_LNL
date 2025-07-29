@@ -76,11 +76,8 @@ Double_t CCE_pari(Double_t *x, Double_t* par) {
    aliveZ *= 1000.;
    deadZ *= 1000.;
    deadAxEy *= 1000.;
-   CCEAxEy *= 1000.;
    deadAyEx_step1 *= 1000.;
    deadAyEx_step2 *= 1000.;
-   CCEAyEx_step1 *= 1000.;
-   CCEAyEx_step2 *= 1000.;
 
    //std::cout << "Half SiC length = " << SiCX << " um\t" 
    //          << "Half SiC thickness = " << SiCZ << " um" << std::endl;
@@ -94,13 +91,13 @@ Double_t CCE_pari(Double_t *x, Double_t* par) {
    Double_t c = mezzo - deadAxEy;
 
 
-   if ( x[0] < - a || x[0] > c || x[2] < - a || x[2] > c ) //x[0] = x, x[1] = y
+   if ( x[0] < - a || x[0] > c || x[1] < - a || x[1] > c ) //x[0] = x, x[1] = y
       result = 0;
    
-   if ( (x[0] > - a && x[0] < - b) || (x[2] > - a && x[2] < - b )) //x[0] = x, x[1] = y
+   if ( (x[0] > - a && x[0] < - b) || (x[1] > - a && x[1] < - b )) //x[0] = x, x[1] = y
       result = 0.80;
 
-   if ( (x[0] > - b && x[0] < c) && (x[2] > - b && x[2] < c )) //x[0] = x, x[1] = y      
+   if ( (x[0] > - b && x[0] < c) && (x[1] > - b && x[1] < c )) //x[0] = x, x[1] = y      
       result = 1;   
   
 return result;
@@ -152,11 +149,8 @@ Double_t CCE_dispari(Double_t *x, Double_t* par) {
    aliveZ *= 1000.;
    deadZ *= 1000.;
    deadAxEy *= 1000.;
-   CCEAxEy *= 1000.;
    deadAyEx_step1 *= 1000.;
    deadAyEx_step2 *= 1000.;
-   CCEAyEx_step1 *= 1000.;
-   CCEAyEx_step2 *= 1000.;
 
    //std::cout << "Half SiC length = " << SiCX << " um\t" 
    //          << "Half SiC thickness = " << SiCZ << " um" << std::endl;
@@ -170,16 +164,16 @@ Double_t CCE_dispari(Double_t *x, Double_t* par) {
    Double_t c = mezzo - deadAxEy;
 
 
-   if ( x[0] < - c || x[0] > a || x[2] < - a || x[2] > c ) //x[0] = x, x[1] = y
+   if ( x[0] < - c || x[0] > a || x[1] < - a || x[1] > c ) //x[0] = x, x[1] = y
       result = 0;
    
-   if ( (x[0] > b && x[0] < a) || (x[2] > - a && x[2] < - b )) //x[0] = x, x[1] = y
+   if ( (x[0] > b && x[0] < a) || (x[1] > - a && x[1] < - b )) //x[0] = x, x[1] = y
       result = 0.80;
 
-   if ( (x[0] > - c && x[0] < b) && (x[2] > - b && x[2] < c )) //x[0] = x, x[1] = y      
+   if ( (x[0] > - c && x[0] < b) && (x[1] > - b && x[1] < c )) //x[0] = x, x[1] = y      
       result = 1;   
   
-return result;
+   return result;
 
 }
 
@@ -286,6 +280,11 @@ void treeAn4() {
    //k=1,2,3,4,5,6,7,8,9
    Int_t Zk[9] = {8,8,9,9,9,10,10,8,8};         // RP
    Int_t Ak[9] = {20,19,19,20,21,20,21,16,19};  // RP
+   Int_t deadsic_mult = 0;                          // RP
+   Double_t aEdeadSiC[100] = {0.};                   // RP 
+   Int_t    deadsicID[100] = {0};                    // RP   
+
+
    
    Double_t thetafoc_resol=0.00425531;	// From simul.out we get the exact value of thetafoc, called tf.
 						// The variable thetafoc_resol represents the thetafoc resolution in sigma,
@@ -354,11 +353,11 @@ void treeAn4() {
    simul_tree2->Branch("atom_number", &atom_number, "atomic_number/I" );
    simul_tree2->Branch("mass_number", &mass_number, "mass_number/I" );
    simul_tree2->Branch("KinE", &KinEnergy, "KinEnergy/D" );
-   simul_tree2->Branch("xf", &xf, "xf/D" );
-   simul_tree2->Branch("yf", &yf, "yf/D" );
-   simul_tree2->Branch("tf", &tf, "tf/D" );
-   simul_tree2->Branch("phf", &phf, "phf/D" );
-   simul_tree2->Branch("dEtrk", &dEtrk, "dEtrk/D" );           // RP
+   //simul_tree2->Branch("xf", &xf, "xf/D" );
+   //simul_tree2->Branch("yf", &yf, "yf/D" );
+   //simul_tree2->Branch("tf", &tf, "tf/D" );
+   //simul_tree2->Branch("phf", &phf, "phf/D" );
+   //simul_tree2->Branch("dEtrk", &dEtrk, "dEtrk/D" );           // RP
    simul_tree2->Branch("sic_mult", &sic_mult, "sic_mult/I" );  // RP
    simul_tree2->Branch("aESiC", aESiC, "aESiC[sic_mult]/D" );  // RP
    simul_tree2->Branch("sicID",sicID,"sicID[sic_mult]/I");     // RP
@@ -370,6 +369,9 @@ void treeAn4() {
    simul_tree2->Branch("csiID",csiID,"csiID[csi_mult]/I");     // RP
    simul_tree2->Branch("tCsI", tCsI, "tCsI[csi_mult]/D");      // RP
    simul_tree2->Branch("n_phot_Horn",n_phot_Horn,"n_phot_Horn[csi_mult]/D");//RP
+   simul_tree2->Branch("deadsic_mult", &deadsic_mult, "deadsic_mult/I" );  // RP
+   simul_tree2->Branch("aEdeadSiC", aEdeadSiC, "aEdeadSiC[deadsic_mult]/D" );  // RP
+   simul_tree2->Branch("deadsicID",deadsicID,"deadsicID[deadsic_mult]/I");     // RP   
 
    // la coppia individua i copyNb del SiC e del CsI, 
    // non c'è bisogno del logicVolume
@@ -470,7 +472,7 @@ void treeAn4() {
 		double edep = it->second;
 		switch((it->first).first)
 		  {
-		  case 1:
+		  case 1: // case 1 means SiC active volume
 		    // Facciamo il sampling gaussiano dei soli eventi in cui
 		    // il SiC è stato colpito
                   sigma_SiC =  TMath::Sqrt( k3 + k4*edep);  // GB 2021-05-10
@@ -490,7 +492,27 @@ void treeAn4() {
 		    ++sic_mult;
 
 		    break;
-		  case 3:		    
+		  case 2: // case 2 means SiC dead volume
+		    // Facciamo il sampling gaussiano dei soli eventi in cui
+		    // il SiC è stato colpito
+                  sigma_SiC =  TMath::Sqrt( k3 + k4*edep);  // GB 2021-05-10
+		    if(edep > 0.)   
+		      edep = rnd->Gaus(edep, sigma_SiC);
+		    // Se il SiC è stato colpito, ma con il sampling gaussiano
+		    // otteniamo un valore negativo, diciamo che l'energia
+		    // depositata è stata di 0.000001 MeV
+		    aEdeadSiC[deadsic_mult] = (edep < 0.)? 1e-06 : edep ;
+		    deadsicID[deadsic_mult] = (it->first).second;
+		    //xSic[sic_mult] = xSiCMap[make_pair((it->first).first,
+			//			       (it->first).second)];
+		    //ySic[sic_mult] = ySiCMap[make_pair((it->first).first,
+			//			       (it->first).second)];
+		    //tSiC[sic_mult] = tSiCMap[make_pair((it->first).first,
+			//			       (it->first).second)];
+		    ++deadsic_mult;
+
+		    break;
+		  case 3: // case 3 means CsI	    
 		    // Facciamo il sampling gaussiano dei soli eventi in cui
 		    // il CsI è stato colpito
 		    if(edep > 0.)
@@ -548,6 +570,12 @@ void treeAn4() {
 	      }
 	      csi_mult = 0;
 	      
+	      for(int a=0; a<deadsic_mult; ++a){
+		aEdeadSiC[a] = 0.;
+		deadsicID[a] = 0;
+	      }
+	      deadsic_mult = 0;
+	      
 	      // RP - end
 	      
            } //chiudo l'if(dump!=-1 && evtIDpost!=dump)       
@@ -568,15 +596,13 @@ void treeAn4() {
 	       ySiCMap[make_pair(logVol,copyNb)]=y;
 	       tSiCMap[make_pair(logVol,copyNb)]=tSiCfake;
 	     }
-        if (copyNb % 2 == 0){
-            eDep = eDep*(resp_funct_p->Eval(x,y,z));
-        }
-        if (copyNb % 2 == 1){
-            eDep = eDep*(resp_funct_d->Eval(x,y,z));
-        }
+             if (copyNb % 2 == 0){
+                eDep = eDep*(resp_funct_p->Eval(x,y,z));
+             }
+             if (copyNb % 2 == 1){
+                eDep = eDep*(resp_funct_d->Eval(x,y,z));
+             }
         
-        
-	     
 	   }
 	   else if(logVol==3){
 	     if(MaxEnergyMap.count(make_pair(logVol,copyNb))){
