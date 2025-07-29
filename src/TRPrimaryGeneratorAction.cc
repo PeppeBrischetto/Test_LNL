@@ -169,7 +169,9 @@ void TRPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     //fParticleGun->SetParticleMomentumDirection(direction);
 
     // 4. Imposta energia della particella
-    fParticleGun->SetParticleEnergy(300.*MeV);  // o qualsiasi valore ti serva
+    //G4double energy = (263.6- (20.* G4UniformRand())) *MeV;
+    G4double energy = 250 *MeV;
+    fParticleGun->SetParticleEnergy(energy);  // o qualsiasi valore ti serva
 
     // 5. Genera il vertice primario
     //fParticleGun->GeneratePrimaryVertex(anEvent);
